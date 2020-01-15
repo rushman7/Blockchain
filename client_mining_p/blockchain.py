@@ -82,22 +82,6 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    # def proof_of_work(self, block):
-    #     """
-    #     Simple Proof of Work Algorithm
-    #     Stringify the block and look for a proof.
-    #     Loop through possibilities, checking each one against `valid_proof`
-    #     in an effort to find a number that is a valid proof
-    #     :return: A valid proof for the provided block
-    #     """
-    #     block_string = json.dumps(self.last_block, sort_keys=True)
-    #     proof = 0
-    #     while self.valid_proof(block_string, proof) is False:
-    #         proof += 1
-
-    #     return proof
-    #     # return proof
-
     @staticmethod
     def valid_proof(block_string, proof):
         """
@@ -130,8 +114,8 @@ blockchain = Blockchain()
 def mine():
     try:
         data = request.get_json() # retrieve json data
-    except: ValueError:
-        print('Error: Non-Json response.')
+    except ValueError:
+        print('Error: Non-Json response. Line 118')
         print(request)
         return 'ERROR'
 
@@ -143,23 +127,23 @@ def mine():
             code = 400
     
     else: # if it is valid
-        block_string = json.dumps(blockchain) 
+        block_string = json.dumps(blockchain.last_block, sort_keys=True)
         miner_proof = data['proof'] # proof of work
 
-        if blockchain.valid_proof(block_string, miner_proof): # if the proof is validated
+        if blockchain.valid_proof(block_string, miner_proof): # Check that 'proof', and 'id' are present
             previous_hash = blockchain.hash(blockchain.last_block) 
             new_block = blockchain.new_block(miner_proof, previous_hash)
 
-             response = {
-                'message' : "Block created", # create new block
+            response = {
+                'message' : "New Block Forged", # create new block
                 'block' : new_block
             }
+            code = 200
         else:
             response = {
                 'message' : 'Update last block'
             }
             code = 400
-
 
     return jsonify(response), code
 
@@ -176,7 +160,7 @@ def full_chain():
 @app.route('/last_block', methods=['GET'])
 def last_block():
     response = {
-        'last_block': blockchain.last_block()
+        'last_block': blockchain.last_block
     }
     return jsonify(response), 200
 

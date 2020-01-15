@@ -6,6 +6,8 @@ import json
 
 DIFFICULTY = 6
 
+coins = 0
+
 def proof_of_work(block):
     """
     Simple Proof of Work Algorithm
@@ -15,14 +17,14 @@ def proof_of_work(block):
     :return: A valid proof for the provided block
     """
     print(f'Searching for proof on block {block}...')
+    block_string = json.dumps(block, sort_keys=True)
     proof = 0
-    while self.valid_proof(last_proof, proof) is False: # loop runs until the checked proof is true
+    while valid_proof(block_string, proof) is False: # loop runs until the checked proof is true
         proof += 1
 
     print(f'Proof found, {proof}')
     return proof
 
-@staticmethod
 def valid_proof(block_string, proof):
     """
     Validates the Proof:  Does hash(block_string, proof) contain 6
@@ -65,16 +67,28 @@ if __name__ == '__main__':
             print(r)
             break
 
-        # TODO: Get the block from `data` and use it to look for a new proof
-        # new_proof = ???
+        # Get the block from `data` and use it to look for a new proof
+        block = data['last_block']
+        new_proof = proof_of_work(block)
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
 
         r = requests.post(url=node + "/mine", json=post_data)
-        data = r.json()
 
-        # TODO: If the server responds with a 'message' 'New Block Forged'
+        # If the server responds with a 'message' 'New Block Forged'
         # add 1 to the number of coins mined and print it.  Otherwise,
         # print the message from the server.
-        pass
+
+        try:
+            data = r.json()
+        except ValueError:
+            print("Error:  Non-json response")
+            print("Response returned:")
+            print(r)
+            break
+
+        if data['message'] == 'New Block Forged':
+            coins += 1
+            print('Received block reward of 1, total coins: ', coins)
+            print(data)
