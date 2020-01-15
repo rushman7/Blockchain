@@ -3,6 +3,7 @@ import requests
 
 import sys
 import json
+from time import time
 
 DIFFICULTY = 6
 
@@ -16,13 +17,15 @@ def proof_of_work(block):
     in an effort to find a number that is a valid proof
     :return: A valid proof for the provided block
     """
-    print(f'Searching for proof on block {block}...')
+    print(f'Searching for proof on block...')
+    new_time = time()
     block_string = json.dumps(block, sort_keys=True)
     proof = 0
     while valid_proof(block_string, proof) is False: # loop runs until the checked proof is true
         proof += 1
-
-    print(f'Proof found, {proof}')
+    total_time = time() - new_time
+    print(f'Proof found: {proof}')
+    print('Total time: {:0.2f} seconds.'.format(total_time))
     return proof
 
 def valid_proof(block_string, proof):
