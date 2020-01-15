@@ -13,7 +13,13 @@ def proof_of_work(block):
     in an effort to find a number that is a valid proof
     :return: A valid proof for the provided block
     """
-    pass
+    print(f'Searching for proof on block {block}...')
+    proof = 0
+    while self.valid_proof(last_proof, proof) is False:
+        proof += 1
+
+    print(f'Proof found, {proof}')
+    return proof
 
 
 def valid_proof(block_string, proof):
