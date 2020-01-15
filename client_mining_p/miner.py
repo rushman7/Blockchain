@@ -4,6 +4,7 @@ import requests
 import sys
 import json
 
+DIFFICULTY = 6
 
 def proof_of_work(block):
     """
@@ -15,13 +16,13 @@ def proof_of_work(block):
     """
     print(f'Searching for proof on block {block}...')
     proof = 0
-    while self.valid_proof(last_proof, proof) is False:
+    while self.valid_proof(last_proof, proof) is False: # loop runs until the checked proof is true
         proof += 1
 
     print(f'Proof found, {proof}')
     return proof
 
-
+@staticmethod
 def valid_proof(block_string, proof):
     """
     Validates the Proof:  Does hash(block_string, proof) contain 6
@@ -33,7 +34,10 @@ def valid_proof(block_string, proof):
     correct number of leading zeroes.
     :return: True if the resulting hash is a valid proof, False otherwise
     """
-    pass
+    guess = f'{block_string}{proof}'.encode()
+    guess_hash = hashlib.sha256(guess).hexdigest()
+
+    return guess_hash[:DIFFICULTY] == "0" * DIFFICULTY # guess must have for leading 0's
 
 
 if __name__ == '__main__':
