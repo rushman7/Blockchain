@@ -115,7 +115,7 @@ def mine():
     try:
         data = request.get_json() # retrieve json data
     except ValueError:
-        print('Error: Non-Json response. Line 118')
+        print('Error: Non-Json response.')
         print(request)
         return 'ERROR'
 
