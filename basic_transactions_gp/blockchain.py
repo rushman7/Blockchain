@@ -5,7 +5,7 @@ from uuid import uuid4
 
 from flask import Flask, jsonify, request
 
-DIFFICULTY = 6
+DIFFICULTY = 3
 
 class Blockchain(object):
     def __init__(self):
@@ -127,6 +127,32 @@ node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
 blockchain = Blockchain()
 
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    try:
+        data = request.get_json() # retrieve json data
+    except ValueError:
+        print('Error: Non-Json response.')
+        print(request)
+        return 'ERROR'
+
+    req_keys = ['sender', 'recipient', 'amount']
+
+    for key in req_keys: # check if proof is not valid
+        if key not in data:
+            response = { 'Error' : 'Invalid proof format.' }
+            code = 400
+
+    # create a new transaction
+    else:
+        index = blockchain.new_transaction(data['sender'], data['recipient'], data['amount'])
+
+        response = {
+          'message' f'Transaction will post to block {index}'
+        }
+        code = 201
+
+    return jsonify(response), code
 
 @app.route('/mine', methods=['POST'])
 def mine():
